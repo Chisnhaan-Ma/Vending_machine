@@ -1,0 +1,6 @@
+
+State Machine - |Vending_machine|current
+Name current.IDLE current.REC current.WAIT 
+current.IDLE 0 0 0 
+current.WAIT 1 0 1 
+current.REC 1 1 0 
