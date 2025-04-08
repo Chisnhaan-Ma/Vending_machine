@@ -1,64 +1,126 @@
 module Vending_machine(
 	input logic clk,
-	input logic reset,
-	input logic nickel,
-	input logic dime,
-	input logic quarter,
-	output logic soda,
-	output logic [2:0] change
-);
-
-	localparam IDLE = 2'b00;
-	localparam WAIT = 2'b01;
-	localparam REC  = 2'b10;
-
-	logic [5:0] coin;
-	logic [1:0] current;
-	logic [1:0] next;
-
-always_comb begin
-	case (current)
-		IDLE: begin
-			coin = 6'b0;
-			soda = 1'b0;
-			change = 3'b0;
-          	if (!(nickel | dime | quarter)) next = current;
-			else if (quarter) next = REC;
-			else next = WAIT;
+	input logic rs,
+	input logic n,
+	input logic d,
+	input logic q,
+	output logic s,
+	output logic [2:0]c);
+	
+	typedef enum logic [3:0] {S0,S5,S10,S15,S20,S25,S30,S35,S40} state;
+	state current, next;
+	logic [4:0]coin;
+	
+	always_comb begin
+		case(current)
+		S0: begin
+			if(!(n|d|q)) next = current;
+			else if(n) 	 next = S5;
+			else if(d) 	 next = S10;
+			else 			 next = S25;
 		end
-		
-		WAIT: begin
-          	if (nickel) coin = coin + 6'd5;
-            else if (dime) coin = coin + 6'd10;
-           	else coin <= coin + 6'd25;
-			if (coin >= 6'd20) next = REC;
-			else next = current;
+		S5: begin
+			if(!(n|d|q)) next = current;
+			else if(n) 	 next = S10;
+			else if(d) 	 next = S15;
+			else 			 next = S30;
 		end
-		
-		REC: begin
-          		soda <= 1'b1;
-				case (coin)
-					6'd20: change = 3'b000;
-					6'd25: change = 3'b001;
-					6'd30: change = 3'b010;
-					6'd35: change = 3'b011;
-					6'd40: change = 3'b100;
-                  	default change = 3'b000; 
-				endcase
-				next = IDLE;
+		S10: begin
+			if(!(n|d|q)) next = current;
+			else if(n) 	 next = S15;
+			else if(d) 	 next = S20;
+			else 			 next = S35;
 		end
-		
-		default: next = IDLE;
-	endcase
-end	
-
-  always_ff @ (posedge clk or reset) begin
-	if (reset) begin
-		current <= IDLE;
-	end else begin
-		current <= next;
+		S15: begin
+			if(!(n|d|q)) next = current;
+			else if(n) 	 next = S20;
+			else if(d) 	 next = S25;
+			else 			 next = S40;
+		end
+		S20: 				 next = S0;
+		S25: 				 next = S0;
+		S30: 				 next = S0;
+		S35: 				 next = S0;
+		S40: 				 next = S0;
+		//soda:				 next = S0;
+		default next = S0;
+		endcase
 	end
-  end
+	
+	always_ff @(posedge clk) begin
+     current <= next;
+	end
 
-
+	always_comb begin
+	 if(!rs) begin
+		 case(current)
+			S0: begin
+				s = 1'b0;
+				c = 3'b000;
+			end
+			S5: begin
+				s = 1'b0;
+				c = 3'b001;
+			end
+			S10: begin
+				s = 1'b0;
+				c = 3'b010;
+			end
+			S15: begin
+				s = 1'b0;
+				c = 3'b011;
+			end
+			default begin
+				s = 1'b0;
+				c = 3'b000;
+			end
+		 endcase
+	end
+		
+	 else begin
+	 case(current)
+		S0: begin
+			s = 1'b0;
+			c = 3'b000;
+		end
+		S5: begin
+			s = 1'b0;
+			c = 3'b000;
+		end
+		S10: begin
+			s = 1'b0;
+			c = 3'b000;
+		end
+		S15: begin
+			s = 1'b0;
+			c = 3'b000;
+		end
+		S20: begin
+			s = 1'b1;
+			c = 3'b000;
+		end
+		S25: begin
+			s = 1'b1;
+			c = 3'b001;
+		end
+		S30: begin
+			s = 1'b1;
+			c = 3'b010;
+		end
+		S35: begin
+			s = 1'b1;
+			c = 3'b011;
+		end
+		S40: begin
+			s = 1'b1;
+			c = 3'b100;
+		end
+		default begin 
+			s = 1'b0;
+			c = 3'b000;
+		end
+		endcase
+		end
+	end	
+	
 endmodule
