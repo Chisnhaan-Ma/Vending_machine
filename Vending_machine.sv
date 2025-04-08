@@ -1,9 +1,9 @@
 module Vending_machine(
 	input logic clk,
 	input logic rs,
-	input logic n,
-	input logic d,
-	input logic q,
+	input logic nickle,
+	input logic dime,
+	input logic quarter,
 	output logic s,
 	output logic [2:0]c);
 	
@@ -14,27 +14,27 @@ module Vending_machine(
 	always_comb begin
 		case(current)
 		S0: begin
-			if(!(n|d|q)) next = current;
-			else if(n) 	 next = S5;
-			else if(d) 	 next = S10;
+			if(!(nickle|dime|quarter)) next = current;
+			else if(nickle) 	 next = S5;
+			else if(dime) 	 next = S10;
 			else 			 next = S25;
 		end
 		S5: begin
-			if(!(n|d|q)) next = current;
-			else if(n) 	 next = S10;
-			else if(d) 	 next = S15;
+			if(!(nickle|dime|quarter)) next = current;
+			else if(nickle) 	 next = S10;
+			else if(dime) 	 next = S15;
 			else 			 next = S30;
 		end
 		S10: begin
-			if(!(n|d|q)) next = current;
-			else if(n) 	 next = S15;
-			else if(d) 	 next = S20;
+			if(!(nickle|dime|quarter)) next = current;
+			else if(nickle) 	 next = S15;
+			else if(dime) 	 next = S20;
 			else 			 next = S35;
 		end
 		S15: begin
-			if(!(n|d|q)) next = current;
-			else if(n) 	 next = S20;
-			else if(d) 	 next = S25;
+			if(!(nickle|dime|quarter)) next = current;
+			else if(nickle) 	 next = S20;
+			else if(dime) 	 next = S25;
 			else 			 next = S40;
 		end
 		S20: 				 next = S0;
@@ -42,7 +42,6 @@ module Vending_machine(
 		S30: 				 next = S0;
 		S35: 				 next = S0;
 		S40: 				 next = S0;
-		//soda:				 next = S0;
 		default next = S0;
 		endcase
 	end
@@ -76,7 +75,7 @@ module Vending_machine(
 			end
 		 endcase
 	end
-		
+	 
 	 else begin
 	 case(current)
 		S0: begin
@@ -121,6 +120,6 @@ module Vending_machine(
 		end
 		endcase
 		end
-	end	
+	end
 	
 endmodule
